@@ -20,4 +20,5 @@ public:
 private:
     Ui::Game *ui;
 };
+
 #endif // GAME_H
