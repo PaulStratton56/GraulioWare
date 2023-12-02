@@ -44,6 +44,7 @@ private:
     int lives;
     QLabel *liva;
     QLabel *scora;
+    bool end;
 
 };
 

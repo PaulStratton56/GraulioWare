@@ -11,6 +11,7 @@ Game::Game(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Game)
 {
+    end = false;
     ui->setupUi(this);
     this->setFixedSize(1280, 720);
     lives = 0;
@@ -29,13 +30,13 @@ Game::Game(QWidget *parent)
 Game::~Game()
 {
     delete timer;
-    //delete nTimer;
     delete ui;
 }
 
 void Game::navi(int index){
     if(index == 1){
         timer->start(2*1000);
+        qDebug() << "Timer started";
     }
 }
 
@@ -43,6 +44,7 @@ void Game::on_QuitButton_clicked()
 {
     close();
 }
+
 void Game::goNext(){
     vis = false;
     int num = rand()%4;
@@ -50,7 +52,7 @@ void Game::goNext(){
         ui->stackedWidget->setCurrentIndex(2);
         qDebug() <<"timer started";
         timer->start(5*1000);
-    }else   if(num == 1){
+    }else if(num == 1){
         ui->stackedWidget->setCurrentIndex(3);
         timer->start(5*1000);
         qDebug() <<"timer started";
@@ -76,6 +78,7 @@ void Game::on_StartButton_clicked()
 }
 
 void Game::reg(){
+    qDebug() <<"timer ended";
     if(vis == false){
         timeoutCallback();
     }else{
@@ -85,21 +88,22 @@ void Game::reg(){
 void Game::timeoutCallback(){
     vis = true;
     if(lives > 1){
-        ui->stackedWidget->setCurrentIndex(1);
         lives -= 1;
+        liva->setText("Lives: " + QString::number(lives));
+        ui->stackedWidget->setCurrentIndex(1);
 
     }else{
         if(score > 1000){
+            timer->stop();
             ui->stackedWidget->setCurrentIndex(7);
         }else{
+            timer->stop();
             ui->stackedWidget->setCurrentIndex(6);
 
         }
     }
 
 }
-
-
 
 void Game::on_again_clicked()
 {
@@ -110,5 +114,11 @@ void Game::on_again_clicked()
 void Game::on_retry_clicked()
 {
     Game::on_StartButton_clicked();
+}
+
+
+void Game::on_giveup_clicked()
+{
+    close();
 }
 
