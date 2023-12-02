@@ -36,6 +36,8 @@ private slots:
 
     void on_retry_clicked();
 
+    void on_giveup_clicked();
+
 private:
     QTimer* timer;
     bool vis;
@@ -45,7 +47,6 @@ private:
     QLabel *liva;
     QLabel *scora;
     bool end;
-
 };
 
 #endif // GAME_H
