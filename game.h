@@ -38,11 +38,12 @@ private slots:
 
 private:
     QTimer* timer;
-    QTimer* nTimer;
     bool vis;
     Ui::Game *ui;
     int score;
     int lives;
+    QLabel *liva;
+    QLabel *scora;
 
 };
 

@@ -4,6 +4,7 @@
 #include <qdebug.h>
 #include <QPoint>
 #include <random>
+#include <Qstring>
 
 
 Game::Game(QWidget *parent)
@@ -16,11 +17,12 @@ Game::Game(QWidget *parent)
     score = 0;
     vis = true;
     timer = new QTimer(this);
-    //nTimer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Game::reg);
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &Game::navi);
-    //connect(nTimer, &QTimer::timeout, this, &Game::goNext);
+    QWidget *gameNavig = ui->stackedWidget->widget(1);
 
+    liva = gameNavig->findChild<QLabel*>("Lives");
+    scora = gameNavig->findChild<QLabel*>("Score");
 }
 
 
@@ -67,6 +69,8 @@ void Game::on_StartButton_clicked()
 {
     lives = 3;
     score = 0;
+    liva->setText("Lives: " + QString::number(lives));
+    scora->setText("Score: " + QString::number(score));
     qDebug() << "startbuttopn lciokedasd";
     ui->stackedWidget->setCurrentIndex(1);
 }
@@ -83,6 +87,7 @@ void Game::timeoutCallback(){
     if(lives > 1){
         ui->stackedWidget->setCurrentIndex(1);
         lives -= 1;
+
     }else{
         if(score > 1000){
             ui->stackedWidget->setCurrentIndex(7);
@@ -98,16 +103,12 @@ void Game::timeoutCallback(){
 
 void Game::on_again_clicked()
 {
-    lives = 3;
-    score = 0;
-    ui->stackedWidget->setCurrentIndex(1);
+    Game::on_StartButton_clicked();
 }
 
 
 void Game::on_retry_clicked()
 {
-    lives = 3;
-    score = 0;
-    ui->stackedWidget->setCurrentIndex(1);
+    Game::on_StartButton_clicked();
 }
 
