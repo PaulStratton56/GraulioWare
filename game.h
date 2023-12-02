@@ -2,6 +2,14 @@
 #define GAME_H
 
 #include <QMainWindow>
+#include <QLabel>
+#include <QKeyEvent>
+#include <QTimer>
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions_3_3_Core>
+#include <QStackedWidget>
+
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,9 +24,26 @@ class Game : public QMainWindow
 public:
     Game(QWidget *parent = nullptr);
     ~Game();
+private slots:
+    void on_QuitButton_clicked();
+    void on_StartButton_clicked();
+    void timeoutCallback();
+
+    void on_again_clicked();
+    void navi(int index);
+    void goNext();
+    void reg();
+
+    void on_retry_clicked();
 
 private:
+    QTimer* timer;
+    QTimer* nTimer;
+    bool vis;
     Ui::Game *ui;
+    int score;
+    int lives;
+
 };
 
 #endif // GAME_H
