@@ -55,19 +55,15 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event) {
     case Qt::Key_Left:
         qDebug() << "left pressed";
         x_pos -= 0.1;
-
         break;
     case Qt::Key_Right:
         x_pos += 0.1;
-
         break;
     case Qt::Key_Up:
         y_pos += 0.1;
-
         break;
     case Qt::Key_Down:
         y_pos -= 0.1;
-
         break;
     default:
         break;

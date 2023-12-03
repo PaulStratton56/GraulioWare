@@ -11,7 +11,7 @@
 #include <QRandomGenerator>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include "openglwidget.h"
+#include "arrowkeys.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -37,7 +37,6 @@ private slots:
     void widgetChanged(int index);
     void startMinigame();
     void loseMinigame();
-    void winMinigame();
     void globalTimeout();
 
     void startGame_Typing();
@@ -45,7 +44,8 @@ private slots:
     void startGame_Arrows();
 
     QString getLetters(int length);
-    void touched();
+    void handleArrows();
+    // void touched();
     void on_lineEdit_textChanged(const QString &arg1);
 
 private:
@@ -59,8 +59,10 @@ private:
     // QLabel *scora;
     // QLabel *lultext;
     // QLineEdit *shower;
-    OpenGLWidget *avoidGameDisplay;
+    QOpenGLWidget *avoidGameDisplay;
     QVBoxLayout* avoidGame;
+    ArrowKeys *arrowKeysWidget;
+    QVBoxLayout* arrowGame;
 
 };
 

@@ -2,7 +2,7 @@
 #define GAMEVARS_H
 
 #define STARTING_LIVES 4;
-#define MINIGAME_START_TIME 5;
+#define MINIGAME_START_TIME 10;
 
 enum gameStates
 {

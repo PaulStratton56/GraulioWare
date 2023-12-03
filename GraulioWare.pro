@@ -11,6 +11,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    arrowkeys.cpp \
     key.cpp \
     main.cpp \
     game.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
     target.cpp
 
 HEADERS += \
+    arrowkeys.h \
     game.h \
     gameVars.h \
     key.h \
