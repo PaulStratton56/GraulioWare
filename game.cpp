@@ -20,6 +20,7 @@ Game::Game(QWidget *parent)
     this->setFixedSize(1280, 720);
 
     globalTimer = new QTimer(this);
+    secondTimer = new QTimer(this);
 
     avoidGameDisplay = new OpenGLWidget(this);
     avoidGameDisplay->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -30,6 +31,7 @@ Game::Game(QWidget *parent)
 
     connect(avoidGameDisplay, &OpenGLWidget::squaresOverlapping, this, &Game::touched);
     connect(globalTimer, &QTimer::timeout, this, &Game::globalTimeout);
+    connect(secondTimer, &QTimer::timeout, this, &Game::secondTimeout);
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &Game::widgetChanged);
 }
 
@@ -37,6 +39,7 @@ Game::Game(QWidget *parent)
 Game::~Game()
 {
     delete globalTimer;
+    delete secondTimer;
     delete ui;
     delete avoidGameDisplay;
     delete avoidGame;
@@ -49,8 +52,8 @@ void Game::widgetChanged(int index){
     {
     case(HUB):
         globalTimer->start(2*1000);
-        ui->Lives->setText(QString("Lives: %1").arg(lives));
-        ui->Score->setText(QString("Score: %1").arg(score));
+        ui->Lives->setText(QString("Lives\n%1").arg(lives));
+        ui->Score->setText(QString("Score\n%1").arg(score));
         break;
     case(TYPING):
         startGame_Typing();
@@ -61,7 +64,15 @@ void Game::widgetChanged(int index){
     case(AVOIDANCE):
         startGame_Avoid();
         break;
+    case(LOSS):
+        ui->finalscore->setText(QString("Score\n%1").arg(score));
+        globalTimer->stop();
+        break;
+    case(VICTORY):
+        globalTimer->stop();
+        break;
     }
+
 }
 
 void Game::startMinigame(){
@@ -71,6 +82,9 @@ void Game::startMinigame(){
     ui->stackedWidget->setCurrentIndex(minigame);
     qDebug() <<"timer started";
     globalTimer->start(minigameTime*1000);
+
+    timeLeft = minigameTime;
+    secondTimer->start(1000);
 }
 
 void Game::loseMinigame(){
@@ -83,25 +97,61 @@ void Game::loseMinigame(){
 
 void Game::winMinigame(){
     toGame = true;
-    score += 100;
+    score += POINTS_PER_GAME;
 
-    if(score < 1000) ui->stackedWidget->setCurrentIndex(HUB);
+    if(score < WIN_SCORE) ui->stackedWidget->setCurrentIndex(HUB);
     else ui->stackedWidget->setCurrentIndex(VICTORY);
 }
 
 void Game::globalTimeout(){
-    qDebug() <<"timer ended";
+    qDebug() << "timer ended";
 
+    if(ui->stackedWidget->currentIndex() == TYPING)
+    {
+        for(int i = keyNumber; i < LETTER_NUMBER; i++)
+        {
+            qDebug() << "Deleting key " << i;
+            if(dynamic_cast<CapitalKey*>(keys[i]) != nullptr)
+            {
+                CapitalKey* currentKey = dynamic_cast<CapitalKey*>(keys[i]);
+                currentKey->pressed();
+            }
+            else
+            {
+                LowerKey* currentKey = dynamic_cast<LowerKey*>(keys[i]);
+                currentKey->pressed();
+            }
+            qDebug() << "Key " << i << " deleted.";
+        }
+    }
     if(ui->stackedWidget->currentIndex() == AVOIDANCE) avoidGameDisplay->clearFocus();
 
     if(toGame) startMinigame();
     else loseMinigame();
 }
 
+void Game::secondTimeout(){
+    qDebug() << "second Passed!";
+    timeLeft--;
+    if(timeLeft > 0)
+    {
+        timerLabel->setText(QString("TIME LEFT: %1").arg(timeLeft));
+        secondTimer->start(1000);
+    }
+    else
+    {
+        secondTimer->stop();
+    }
+}
+
 // ========== MINIGAME START FUNCTIONS ==========
 
 void Game::startGame_Typing()
 {
+    ui->TypingTimeLeft->setText(QString("TIME LEFT: %1").arg(minigameTime));
+    ui->KeysRemaining->setText(QString("KEYS REMAINING: %1").arg(LETTER_NUMBER));
+    timerLabel = ui->TypingTimeLeft;
+
     keyNumber = 0;
     QString letters(getLetters(LETTER_NUMBER));
     for(int i = 0; i < LETTER_NUMBER; i++)
@@ -177,6 +227,10 @@ void Game::keyPressEvent(QKeyEvent* event)
         {
             globalTimer->stop();
             winMinigame();
+        }
+        else
+        {
+            ui->KeysRemaining->setText(QString("KEYS REMAINING: %1").arg(10-keyNumber));
         }
     }
 }

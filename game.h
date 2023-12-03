@@ -41,6 +41,7 @@ private slots:
     void loseMinigame();
     void winMinigame();
     void globalTimeout();
+    void secondTimeout();
 
     void startGame_Typing();
     void startGame_Avoid();
@@ -53,15 +54,14 @@ private slots:
 
 private:
     QTimer* globalTimer;
+    QTimer* secondTimer;
     bool toGame;
     Ui::Game *ui;
     int score;
     int lives;
     int minigameTime;
-    // QLabel *liva;
-    // QLabel *scora;
-    // QLabel *lultext;
-    // QLineEdit *shower;
+    int timeLeft;
+    QLabel* timerLabel;
     OpenGLWidget *avoidGameDisplay;
     QVBoxLayout* avoidGame;
     Key* keys[LETTER_NUMBER];

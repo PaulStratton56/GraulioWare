@@ -51,7 +51,7 @@ void CapitalKey::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glColor3f(0.2f, 0.2f, 0.2f);
+    glColor3f(0.1f, 0.1f, 0.1f);
 
     glBegin(GL_QUADS);
     glVertex2f(-1.0, 1.0);
@@ -60,7 +60,7 @@ void CapitalKey::paintGL()
     glVertex2f(-1.0, -1.0);
     glEnd();
 
-    glColor3f(0.4f, 0.4f, 0.4f);
+    glColor3f(0.5f, 0.5f, 0.5f);
 
     glBegin(GL_QUADS);
     glVertex2f(-0.8, 0.8);
@@ -97,7 +97,7 @@ void LowerKey::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glColor3f(0.3f, 0.3f, 0.3f);
+    glColor3f(0.4f, 0.4f, 0.4f);
 
     glBegin(GL_QUADS);
     glVertex2f(-1.0, 1.0);
@@ -106,7 +106,7 @@ void LowerKey::paintGL()
     glVertex2f(-1.0, -1.0);
     glEnd();
 
-    glColor3f(0.5f, 0.5f, 0.5f);
+    glColor3f(0.6f, 0.6f, 0.6f);
 
     glBegin(GL_QUADS);
     glVertex2f(-0.8, 0.8);
