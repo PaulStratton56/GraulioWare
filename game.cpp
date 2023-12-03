@@ -61,25 +61,12 @@ void Game::goNext(){
     while(num == old || num == older){
         num = rand()%4;
     }
-    if(num == 0){
-        ui->stackedWidget->setCurrentIndex(2);
-        qDebug() <<"timer started";
-        timer->start(5*1000);
-    }else if(num == 1){
-        ui->stackedWidget->setCurrentIndex(3);
-        timer->start(5*1000);
-        qDebug() <<"timer started";
-    }else if(num == 2){
-        ui->stackedWidget->setCurrentIndex(4);
-        timer->start(5*1000);
-        qDebug() <<"timer started";
-    }else{
-        ui->stackedWidget->setCurrentIndex(5);
-        timer->start(5*1000);
-        qDebug() <<"timer started";
-    }
     older = old;
     old = num;
+    ui->stackedWidget->setCurrentIndex(2+num);
+    qDebug() <<"timer started";
+    timer->start(5*1000);
+
 
 }
 
