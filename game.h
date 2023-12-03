@@ -14,6 +14,7 @@
 #include "openglwidget.h"
 #include "key.h"
 #include "gameVars.h"
+#include "arrowkeys.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -39,7 +40,6 @@ private slots:
     void widgetChanged(int index);
     void startMinigame();
     void loseMinigame();
-    void winMinigame();
     void globalTimeout();
     void secondTimeout();
 
@@ -50,6 +50,7 @@ private slots:
     QString getLetters(int length);
     void keyPressEvent(QKeyEvent* event);
     void touched();
+    void handleArrows();
     void on_lineEdit_textChanged(const QString &arg1);
 
 private:
@@ -66,6 +67,8 @@ private:
     QVBoxLayout* avoidGame;
     Key* keys[LETTER_NUMBER];
     int keyNumber;
+    ArrowKeys *arrowKeysWidget;
+    QVBoxLayout* arrowGame;
 
 };
 
