@@ -88,7 +88,7 @@ void Game::widgetChanged(int index){
 void Game::startMinigame(){
     toGame = false;
     // int minigame = (rand()%3) + 2;
-    int minigame = TYPING;
+    int minigame = AVOIDANCE;
     ui->stackedWidget->setCurrentIndex(minigame);
     qDebug() <<"timer started";
     globalTimer->start(minigameTime*1000);
@@ -134,7 +134,11 @@ void Game::globalTimeout(){
             qDebug() << "Key " << i << " deleted.";
         }
     }
-    if(ui->stackedWidget->currentIndex() == AVOIDANCE) avoidGameDisplay->clearFocus();
+    if(ui->stackedWidget->currentIndex() == AVOIDANCE)
+    {
+        avoidGameDisplay->moveTimer->stop();
+        avoidGameDisplay->clearFocus();
+    }
 
     if(toGame) startMinigame();
     else loseMinigame();
@@ -181,7 +185,9 @@ void Game::startGame_Typing()
 
 void Game::startGame_Avoid()
 {
+    timerLabel = ui->AvoidTimer;
     avoidGameDisplay->setFocus();
+    avoidGameDisplay->moveTimer->start(500);
 }
 
 void Game::startGame_Arrows()
@@ -248,6 +254,11 @@ void Game::keyPressEvent(QKeyEvent* event)
 void Game::on_lineEdit_textChanged(const QString &arg1)
 {
 
+}
+
+void Game::touched()
+{
+    qDebug() << "Touching..";
 }
 
 // ========== BUTTON FUNCTIONS ==========
