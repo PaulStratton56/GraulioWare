@@ -6,7 +6,7 @@
 #include <QKeyEvent>
 #include <QTimer>
 
-    class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
+class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT
 
 public:
@@ -18,9 +18,9 @@ protected:
     void resizeGL(int w, int h) override;
     void paintGL() override;
     void keyPressEvent(QKeyEvent *event) override;
+    bool areSquaresOverlapping() const;
 private slots:
     void moveChasingSquare();
-    bool areSquaresOverlapping() const;
 private:
     float x_pos;
     float y_pos;
@@ -29,7 +29,7 @@ private:
     float movementSpeed;
     QTimer* moveTimer;
 signals:
-    void squaresOverlapping() const;
+    void squaresOverlapping();
 };
 
 #endif // OPENGLWIDGET_H

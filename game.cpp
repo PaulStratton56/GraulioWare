@@ -27,7 +27,7 @@ Game::Game(QWidget *parent)
     avoidGame = new QVBoxLayout(ui->stackedWidget->widget(AVOIDANCE));
     avoidGame->addWidget(avoidGameDisplay, 0, Qt::AlignCenter);
 
-    // connect(avoidGameDisplay, &OpenGLWidget::squaresOverlapping, this, &Game::touched);
+    connect(avoidGameDisplay, &OpenGLWidget::squaresOverlapping, this, &Game::touched);
     connect(globalTimer, &QTimer::timeout, this, &Game::globalTimeout);
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &Game::widgetChanged);
 }
@@ -71,12 +71,20 @@ void Game::startMinigame(){
     globalTimer->start(minigameTime*1000);
 }
 
-void Game::loseMinigame(){//temporarily disabled losing
+void Game::loseMinigame(){
     toGame = true;
     lives -= 1;
 
     if(lives > 0) ui->stackedWidget->setCurrentIndex(HUB);
     else ui->stackedWidget->setCurrentIndex(LOSS);
+}
+
+void Game::winMinigame(){
+    toGame = true;
+    score += 100;
+
+    if(score < 1000) ui->stackedWidget->setCurrentIndex(HUB);
+    else ui->stackedWidget->setCurrentIndex(VICTORY);
 }
 
 void Game::globalTimeout(){
@@ -113,6 +121,11 @@ QString Game::getLetters(int length)
 }
 
 void Game::on_lineEdit_textChanged(const QString &arg1)
+{
+
+}
+
+void Game::touched()
 {
 
 }
