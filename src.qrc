@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/src">
+        <file>cap1.JPG</file>
+        <file>cap2.JPG</file>
+        <file>cap3.JPG</file>
+    </qresource>
+</RCC>

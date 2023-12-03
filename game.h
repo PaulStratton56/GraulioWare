@@ -8,7 +8,8 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QStackedWidget>
-
+#include <QRandomGenerator>
+#include <QLineEdit>
 
 
 QT_BEGIN_NAMESPACE
@@ -37,6 +38,9 @@ private slots:
     void on_retry_clicked();
 
     void on_giveup_clicked();
+    QString generateRandomLetters(int length);
+
+    void on_lineEdit_textChanged(const QString &arg1);
 
 private:
     QTimer* timer;
@@ -46,7 +50,12 @@ private:
     int lives;
     QLabel *liva;
     QLabel *scora;
-    bool end;
+    QString *word;
+    QLabel *lultext;
+    QLineEdit *shower;
+    int old;
+    int older;
+
 };
 
 #endif // GAME_H

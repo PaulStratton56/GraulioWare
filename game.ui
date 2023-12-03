@@ -143,6 +143,22 @@ li.checked::marker { content: &quot;\2612&quot;; }
           <height>101</height>
          </rect>
         </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="texter">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>130</y>
+          <width>421</width>
+          <height>111</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>texter</string>
+        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="TargetPractice">
