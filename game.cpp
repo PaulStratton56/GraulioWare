@@ -3,6 +3,7 @@
 #include "gameVars.h"
 #include <QTimer>
 #include <qdebug.h>
+#include <cctype>
 #include <QPoint>
 #include <random>
 #include <Qstring>
@@ -65,7 +66,8 @@ void Game::widgetChanged(int index){
 
 void Game::startMinigame(){
     toGame = false;
-    int minigame = (rand()%3) + 2;
+    // int minigame = (rand()%3) + 2;
+    int minigame = TYPING;
     ui->stackedWidget->setCurrentIndex(minigame);
     qDebug() <<"timer started";
     globalTimer->start(minigameTime*1000);
@@ -100,7 +102,21 @@ void Game::globalTimeout(){
 
 void Game::startGame_Typing()
 {
-
+    keyNumber = 0;
+    QString letters(getLetters(LETTER_NUMBER));
+    for(int i = 0; i < LETTER_NUMBER; i++)
+    {
+        if(rand()%2)
+        {
+            CapitalKey* newKey = new CapitalKey(this, ui->KeyLayout, letters[i].toLatin1());
+            keys[i] = static_cast<Key*>(newKey);
+        }
+        else
+        {
+            LowerKey* newKey = new LowerKey(this, ui->KeyLayout, letters[i].toLatin1());
+            keys[i] = static_cast<Key*>(newKey);
+        }
+    }
 }
 
 void Game::startGame_Avoid()
@@ -117,7 +133,52 @@ void Game::startGame_Arrows()
 
 QString Game::getLetters(int length)
 {
+    QString returnString(length,'_');
+    for(int i = 0; i < length; i++)
+    {
+        QChar letter((rand() % (122 - 97 + 1)) + 97);
+        returnString[i] = letter;
 
+    }
+    return returnString;
+}
+
+void Game::keyPressEvent(QKeyEvent* event)
+{
+    qDebug() << "Key pressed! Key: " << event->text();
+    if(ui->stackedWidget->currentIndex() == TYPING)
+    {
+        qDebug() << "In the Typing minigame.";
+        if(dynamic_cast<CapitalKey*>(keys[keyNumber]) != nullptr)
+        {
+            qDebug() << "The current key is capital!";
+            CapitalKey* currentKey = dynamic_cast<CapitalKey*>(keys[keyNumber]);
+            qDebug() << "The current key is: " << currentKey->label->text();
+            if(currentKey->label->text() == event->text())
+            {
+                currentKey->pressed();
+                qDebug() << "You pressed a capital letter key!";
+                keyNumber++;
+            }
+        }
+        else
+        {
+            qDebug() << "The current key is lowercase!";
+            LowerKey* currentKey = dynamic_cast<LowerKey*>(keys[keyNumber]);
+            qDebug() << "The current key is: " << currentKey->label->text();
+            if(currentKey->label->text() == event->text())
+            {
+                currentKey->pressed();
+                qDebug() << "You pressed a lowercase letter key!";
+                keyNumber++;
+            }
+        }
+        if(keyNumber >= LETTER_NUMBER)
+        {
+            globalTimer->stop();
+            winMinigame();
+        }
+    }
 }
 
 void Game::on_lineEdit_textChanged(const QString &arg1)

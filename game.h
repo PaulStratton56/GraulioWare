@@ -12,6 +12,8 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include "openglwidget.h"
+#include "key.h"
+#include "gameVars.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -45,6 +47,7 @@ private slots:
     void startGame_Arrows();
 
     QString getLetters(int length);
+    void keyPressEvent(QKeyEvent* event);
     void touched();
     void on_lineEdit_textChanged(const QString &arg1);
 
@@ -61,6 +64,8 @@ private:
     // QLineEdit *shower;
     OpenGLWidget *avoidGameDisplay;
     QVBoxLayout* avoidGame;
+    Key* keys[LETTER_NUMBER];
+    int keyNumber;
 
 };
 
