@@ -10,6 +10,7 @@
 #include <QStackedWidget>
 #include <QRandomGenerator>
 #include <QLineEdit>
+#include <QVBoxLayout>
 
 
 QT_BEGIN_NAMESPACE
@@ -28,33 +29,36 @@ public:
 private slots:
     void on_QuitButton_clicked();
     void on_StartButton_clicked();
-    void timeoutCallback();
-
     void on_again_clicked();
-    void navi(int index);
-    void goNext();
-    void reg();
-
     void on_retry_clicked();
-
     void on_giveup_clicked();
-    QString generateRandomLetters(int length);
 
+    void widgetChanged(int index);
+    void startMinigame();
+    void loseMinigame();
+    void globalTimeout();
+
+    void startGame_Typing();
+    void startGame_Avoid();
+    void startGame_Arrows();
+
+    QString getLetters(int length);
+    // void touched();
     void on_lineEdit_textChanged(const QString &arg1);
-    //void touched() const;
+
 private:
-    QTimer* timer;
-    bool vis;
+    QTimer* globalTimer;
+    bool toGame;
     Ui::Game *ui;
     int score;
     int lives;
-    QLabel *liva;
-    QLabel *scora;
-    QString word;
-    QLabel *lultext;
-    QLineEdit *shower;
-    int old;
-    QOpenGLWidget *opG;
+    int minigameTime;
+    // QLabel *liva;
+    // QLabel *scora;
+    // QLabel *lultext;
+    // QLineEdit *shower;
+    QOpenGLWidget *avoidGameDisplay;
+    QVBoxLayout* avoidGame;
 
 };
 

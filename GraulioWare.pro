@@ -19,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     game.h \
+    gameVars.h \
     key.h \
     openglwidget.h \
     target.h

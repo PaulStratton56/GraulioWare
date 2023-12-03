@@ -1,5 +1,6 @@
 #include "game.h"
 #include "ui_game.h"
+#include "gameVars.h"
 #include <QTimer>
 #include <qdebug.h>
 #include <QPoint>
@@ -8,164 +9,167 @@
 #include "openglwidget.h"
 #include <QVBoxLayout>
 
+// ========== CONSTRUCTOR/DESTRUCTOR ==========
+
 Game::Game(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Game)
 {
     ui->setupUi(this);
     this->setFixedSize(1280, 720);
-    lives = 0;
-    score = 0;
-    vis = true; //navigation for game nav
-    timer = new QTimer(this);
-    old = 5;
 
-    QWidget *gameNavig = ui->stackedWidget->widget(1);
-    QWidget *typOr = ui->stackedWidget->widget(2);
-    //QWidget *control = ui->stackedWidget->widget(4);
+    globalTimer = new QTimer(this);
 
-    QVBoxLayout *layout = new QVBoxLayout(ui->stackedWidget->widget(4));
-    opG = new OpenGLWidget(this);
-    layout->addWidget(opG, 0, Qt::AlignCenter);
-    opG->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    opG->setFixedSize(600, 400);
+    avoidGameDisplay = new OpenGLWidget(this);
+    avoidGameDisplay->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    avoidGameDisplay->setFixedSize(600, 400);
 
-    shower = typOr->findChild<QLineEdit*>("lineEdit");
-    lultext = typOr->findChild<QLabel*>("texter");
-    liva = gameNavig->findChild<QLabel*>("Lives");
-    scora = gameNavig->findChild<QLabel*>("Score");
+    avoidGame = new QVBoxLayout(ui->stackedWidget->widget(AVOIDANCE));
+    avoidGame->addWidget(avoidGameDisplay, 0, Qt::AlignCenter);
 
-    //connect(opG, &OpenGLWidget::squaresOverlapping, this, &Game::touched);
-    connect(timer, &QTimer::timeout, this, &Game::reg);
-    connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &Game::navi);
+    // connect(avoidGameDisplay, &OpenGLWidget::squaresOverlapping, this, &Game::touched);
+    connect(globalTimer, &QTimer::timeout, this, &Game::globalTimeout);
+    connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &Game::widgetChanged);
 }
 
 
 Game::~Game()
 {
-    delete timer;
+    delete globalTimer;
     delete ui;
+    delete avoidGameDisplay;
+    delete avoidGame;
 }
 
-void Game::navi(int index){
-    if(index == 1){
-        timer->start(2*1000);
-        qDebug() << "Timer started";
-        shower->clear();
-    }else if(index == 2){
-        word = generateRandomLetters(5);
-        lultext->setText(word);
-    }else if(index == 4){
-        opG->setFocus();
+// ========== GAME FLOW FUNCTIONS ==========
+
+void Game::widgetChanged(int index){
+    switch(index)
+    {
+    case(HUB):
+        globalTimer->start(2*1000);
+        ui->Lives->setText(QString("Lives: %1").arg(lives));
+        ui->Score->setText(QString("Score: %1").arg(score));
+        break;
+    case(TYPING):
+        startGame_Typing();
+        break;
+    case(ARROWS):
+        startGame_Arrows();
+        break;
+    case(AVOIDANCE):
+        startGame_Avoid();
+        break;
     }
 }
+
+void Game::startMinigame(){
+    toGame = false;
+    int minigame = (rand()%3) + 2;
+    ui->stackedWidget->setCurrentIndex(minigame);
+    qDebug() <<"timer started";
+    globalTimer->start(minigameTime*1000);
+}
+
+void Game::loseMinigame(){//temporarily disabled losing
+    toGame = true;
+    lives -= 1;
+
+    if(lives > 0) ui->stackedWidget->setCurrentIndex(HUB);
+    else ui->stackedWidget->setCurrentIndex(LOSS);
+}
+
+void Game::globalTimeout(){
+    qDebug() <<"timer ended";
+
+    if(ui->stackedWidget->currentIndex() == AVOIDANCE) avoidGameDisplay->clearFocus();
+
+    if(toGame) startMinigame();
+    else loseMinigame();
+}
+
+// ========== MINIGAME START FUNCTIONS ==========
+
+void Game::startGame_Typing()
+{
+
+}
+
+void Game::startGame_Avoid()
+{
+    avoidGameDisplay->setFocus();
+}
+
+void Game::startGame_Arrows()
+{
+
+}
+
+// ========== HELPER FUNCTIONS ==========
+
+QString Game::getLetters(int length)
+{
+
+}
+
+void Game::on_lineEdit_textChanged(const QString &arg1)
+{
+
+}
+
+// ========== BUTTON FUNCTIONS ==========
 
 void Game::on_QuitButton_clicked()
 {
     close();
 }
 
-void Game::goNext(){
-    vis = false;
-    int num = rand()%3;
-    while(num == old){
-        num = rand()%3;
-    }
-    old = num;
-    num = 2;//bugtesting
-    ui->stackedWidget->setCurrentIndex(2+num);
-    qDebug() <<"timer started";
-    timer->start(20*1000);
-
-
-}
-
 void Game::on_StartButton_clicked()
 {
-    lives = 3;
+    qDebug() << "Beginning Game!";
+    lives = STARTING_LIVES;
     score = 0;
-    liva->setText("Lives: " + QString::number(lives));
-    scora->setText("Score: " + QString::number(score));
-    qDebug() << "startbuttopn lciokedasd";
-    ui->stackedWidget->setCurrentIndex(1);
+    toGame = true;
+    minigameTime = MINIGAME_START_TIME;
+
+    ui->stackedWidget->setCurrentIndex(HUB);
 }
 
-void Game::reg(){
-    qDebug() <<"timer ended";
-    opG->clearFocus();
-    if(vis == false){
-        timeoutCallback();
-    }else{
-        goNext();
-    }
-}
+void Game::on_again_clicked(){ Game::on_StartButton_clicked(); }
+void Game::on_retry_clicked(){ Game::on_StartButton_clicked(); }
+void Game::on_giveup_clicked(){ Game::on_QuitButton_clicked(); }
+
+// ========== OTHER FUNCTIONS ==========
+
+// void Game::on_lineEdit_textChanged(const QString &arg1)
+// {
+//     qDebug() <<arg1 << " "<< word;
+//     QString temp1 = arg1;
+//     QString temp2 = word;
+//     qDebug() <<temp1  << temp2;
+//     if(temp1 == temp2){
+//         qDebug() << "are same";
+//         timer->stop();
+//         score += 100;
+//         scora->setText("Score: " + QString::number(score));
+//         ui->stackedWidget->setCurrentIndex(1);
+//     }
+// }
 
 //void handleSquaresOverlapping(){
 
 //}
-void Game::timeoutCallback(){//temporarily disabled losing
-    vis = true;
-    if(lives > 1){
-        //lives -= 1;
-        liva->setText("Lives: " + QString::number(lives));
-        ui->stackedWidget->setCurrentIndex(1);
 
-    }else{
-        if(score > 1000){
-            timer->stop();
-            ui->stackedWidget->setCurrentIndex(6);
-        }else{
-            timer->stop();
-            ui->stackedWidget->setCurrentIndex(5);
+// QString Game::generateRandomLetters(int length) {
+//     QString randomString;
+//     QRandomGenerator randomGenerator;
 
-        }
-    }
+//     for (int i = 0; i < length; ++i) {
+//         // Generate a random uppercase letter (A-Z) using ASCII values
+//         QChar randomLetter = QChar('A' + (rand()%58));
+//         randomString.append(randomLetter);
+//     }
 
-}
-
-QString Game::generateRandomLetters(int length) {
-    QString randomString;
-    QRandomGenerator randomGenerator;
-
-    for (int i = 0; i < length; ++i) {
-        // Generate a random uppercase letter (A-Z) using ASCII values
-        QChar randomLetter = QChar('A' + (rand()%58));
-        randomString.append(randomLetter);
-    }
-
-    return randomString;
-}
-
-void Game::on_again_clicked()
-{
-    Game::on_StartButton_clicked();
-}
-
-
-void Game::on_retry_clicked()
-{
-    Game::on_StartButton_clicked();
-}
-
-
-void Game::on_giveup_clicked()
-{
-    close();
-}
-
-
-void Game::on_lineEdit_textChanged(const QString &arg1)
-{
-    qDebug() <<arg1 << " "<< word;
-    QString temp1 = arg1;
-    QString temp2 = word;
-    qDebug() <<temp1  << temp2;
-    if(temp1 == temp2){
-        qDebug() << "are same";
-        timer->stop();
-        score += 100;
-        scora->setText("Score: " + QString::number(score));
-        ui->stackedWidget->setCurrentIndex(1);
-    }
-}
+//     return randomString;
+// }
 
