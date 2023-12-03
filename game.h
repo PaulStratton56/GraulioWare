@@ -50,7 +50,7 @@ private:
     int lives;
     QLabel *liva;
     QLabel *scora;
-    QString *word;
+    QString word;
     QLabel *lultext;
     QLineEdit *shower;
     int old;

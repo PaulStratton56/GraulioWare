@@ -18,7 +18,6 @@ Game::Game(QWidget *parent)
     vis = true; //navigation for game nav
     timer = new QTimer(this);
     old = older = 5;
-    QString word = generateRandomLetters(5);
 
     QWidget *gameNavig = ui->stackedWidget->widget(1);
     QWidget *typOr = ui->stackedWidget->widget(2);
@@ -45,7 +44,7 @@ void Game::navi(int index){
         qDebug() << "Timer started";
         shower->clear();
     }else if(index == 2){
-        QString word = generateRandomLetters(5);
+        word = generateRandomLetters(5);
         lultext->setText(word);
     }
 }
@@ -88,7 +87,7 @@ void Game::reg(){
         goNext();
     }
 }
-void Game::timeoutCallback(){
+void Game::timeoutCallback(){//temporarily disabled losing
     vis = true;
     if(lives > 1){
         //lives -= 1;
@@ -114,7 +113,7 @@ QString Game::generateRandomLetters(int length) {
 
     for (int i = 0; i < length; ++i) {
         // Generate a random uppercase letter (A-Z) using ASCII values
-        QChar randomLetter = QChar('A' + (rand()%52));
+        QChar randomLetter = QChar('A' + (rand()%58));
         randomString.append(randomLetter);
     }
 
@@ -142,9 +141,14 @@ void Game::on_giveup_clicked()
 void Game::on_lineEdit_textChanged(const QString &arg1)
 {
     qDebug() <<arg1 << " "<< word;
-    if(&arg1 == word){
+    QString temp1 = arg1;
+    QString temp2 = word;
+    qDebug() <<temp1  << temp2;
+    if(temp1 == temp2){
+        qDebug() << "are same";
         timer->stop();
         score += 100;
+        scora->setText("Score: " + QString::number(score));
         ui->stackedWidget->setCurrentIndex(1);
     }
 }
