@@ -14,11 +14,13 @@ SOURCES += \
     key.cpp \
     main.cpp \
     game.cpp \
+    openglwidget.cpp \
     target.cpp
 
 HEADERS += \
     game.h \
     key.h \
+    openglwidget.h \
     target.h
 
 FORMS += \

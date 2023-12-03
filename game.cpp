@@ -5,7 +5,8 @@
 #include <QPoint>
 #include <random>
 #include <Qstring>
-
+#include "openglwidget.h"
+#include <QVBoxLayout>
 
 Game::Game(QWidget *parent)
     : QMainWindow(parent)
@@ -17,16 +18,24 @@ Game::Game(QWidget *parent)
     score = 0;
     vis = true; //navigation for game nav
     timer = new QTimer(this);
-    old = older = 5;
+    old = 5;
 
     QWidget *gameNavig = ui->stackedWidget->widget(1);
     QWidget *typOr = ui->stackedWidget->widget(2);
+    //QWidget *control = ui->stackedWidget->widget(4);
+
+    QVBoxLayout *layout = new QVBoxLayout(ui->stackedWidget->widget(4));
+    opG = new OpenGLWidget(this);
+    layout->addWidget(opG, 0, Qt::AlignCenter);
+    opG->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    opG->setFixedSize(600, 400);
 
     shower = typOr->findChild<QLineEdit*>("lineEdit");
     lultext = typOr->findChild<QLabel*>("texter");
     liva = gameNavig->findChild<QLabel*>("Lives");
     scora = gameNavig->findChild<QLabel*>("Score");
 
+    //connect(opG, &OpenGLWidget::squaresOverlapping, this, &Game::touched);
     connect(timer, &QTimer::timeout, this, &Game::reg);
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &Game::navi);
 }
@@ -46,6 +55,8 @@ void Game::navi(int index){
     }else if(index == 2){
         word = generateRandomLetters(5);
         lultext->setText(word);
+    }else if(index == 4){
+        opG->setFocus();
     }
 }
 
@@ -56,15 +67,15 @@ void Game::on_QuitButton_clicked()
 
 void Game::goNext(){
     vis = false;
-    int num = rand()%4;
-    while(num == old || num == older){
-        num = rand()%4;
+    int num = rand()%3;
+    while(num == old){
+        num = rand()%3;
     }
-    older = old;
     old = num;
+    num = 2;//bugtesting
     ui->stackedWidget->setCurrentIndex(2+num);
     qDebug() <<"timer started";
-    timer->start(5*1000);
+    timer->start(20*1000);
 
 
 }
@@ -81,12 +92,17 @@ void Game::on_StartButton_clicked()
 
 void Game::reg(){
     qDebug() <<"timer ended";
+    opG->clearFocus();
     if(vis == false){
         timeoutCallback();
     }else{
         goNext();
     }
 }
+
+//void handleSquaresOverlapping(){
+
+//}
 void Game::timeoutCallback(){//temporarily disabled losing
     vis = true;
     if(lives > 1){
@@ -97,10 +113,10 @@ void Game::timeoutCallback(){//temporarily disabled losing
     }else{
         if(score > 1000){
             timer->stop();
-            ui->stackedWidget->setCurrentIndex(7);
+            ui->stackedWidget->setCurrentIndex(6);
         }else{
             timer->stop();
-            ui->stackedWidget->setCurrentIndex(6);
+            ui->stackedWidget->setCurrentIndex(5);
 
         }
     }

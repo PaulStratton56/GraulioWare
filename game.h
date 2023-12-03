@@ -41,7 +41,7 @@ private slots:
     QString generateRandomLetters(int length);
 
     void on_lineEdit_textChanged(const QString &arg1);
-
+    //void touched() const;
 private:
     QTimer* timer;
     bool vis;
@@ -54,7 +54,7 @@ private:
     QLabel *lultext;
     QLineEdit *shower;
     int old;
-    int older;
+    QOpenGLWidget *opG;
 
 };
 
