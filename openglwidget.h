@@ -10,6 +10,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT
 
 public:
+    QTimer* moveTimer;
     OpenGLWidget(QWidget *parent = nullptr);
     ~OpenGLWidget();
 
@@ -27,7 +28,6 @@ private:
     float chasing_x;  // Declare chasing_x as a member variable
     float chasing_y;  // Declare chasing_y as a member variable
     float movementSpeed;
-    QTimer* moveTimer;
 signals:
     void squaresOverlapping();
 };

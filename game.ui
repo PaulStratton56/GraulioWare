@@ -301,6 +301,19 @@ li.checked::marker { content: &quot;\2612&quot;; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Move your character to avoid the object&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
+       <widget class="QLabel" name="AvoidTimer">
+        <property name="geometry">
+         <rect>
+          <x>60</x>
+          <y>90</y>
+          <width>181</width>
+          <height>71</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="GameOver">
        <widget class="QLabel" name="label_3">

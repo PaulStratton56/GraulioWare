@@ -12,7 +12,6 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
     moveTimer = new QTimer(this);
     movementSpeed = .1;
     connect(moveTimer, &QTimer::timeout, this, &OpenGLWidget::moveChasingSquare);
-    moveTimer->start(500);
 }
 
 OpenGLWidget::~OpenGLWidget() {
@@ -92,6 +91,7 @@ void OpenGLWidget::moveChasingSquare() {
     chasing_y += movementSpeed * dy;
 
     if (areSquaresOverlapping()) {
+        qDebug() << "squaresOverlapping!!";
         emit squaresOverlapping();
         // Add your code to handle the overlap condition
     }
