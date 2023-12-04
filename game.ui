@@ -284,7 +284,7 @@ background-color: rgb(28, 0, 52);</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>260</y>
+          <y>310</y>
           <width>271</width>
           <height>41</height>
          </rect>
@@ -328,6 +328,39 @@ background-color: rgb(28, 0, 52);</string>
         </property>
         <property name="text">
          <string>Graulio-Ware</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="SurvivalButton">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>260</y>
+          <width>271</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>18</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 215, 0);
+background-color: rgb(28, 0, 52);</string>
+        </property>
+        <property name="text">
+         <string>Survival</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </widget>
@@ -698,7 +731,7 @@ arrow keys!</string>
        </widget>
       </widget>
       <widget class="QWidget" name="GameOver">
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="gameOverTitle">
         <property name="geometry">
          <rect>
           <x>0</x>

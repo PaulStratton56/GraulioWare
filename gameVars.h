@@ -6,11 +6,12 @@
 #include <QString>
 
 #define STARTING_LIVES 1
-#define MINIGAME_START_TIME 8
+#define MINIGAME_START_TIME 10
 #define LETTER_NUMBER 10
 #define KEY_SIZE 80
-#define WIN_SCORE 600
-#define POINTS_PER_GAME 100
+#define WIN_SCORE 10
+#define DIFFICULTY_INTERVAL 5
+#define POINTS_PER_GAME 1
 
 enum gameStates
 {

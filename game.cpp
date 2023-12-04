@@ -75,6 +75,7 @@ void Game::widgetChanged(int index){
         break;
     case(LOSS):
         ui->finalscore->setText(QString("Score\n%1").arg(score));
+        if(survival) ui->gameOverTitle->setText(QString("!! OUT OF LIVES !!"));
         globalTimer->stop();
         break;
     case(VICTORY):
@@ -86,7 +87,9 @@ void Game::widgetChanged(int index){
 
 void Game::startMinigame(){
     toGame = false;
+    minigameTime = std::max(4, (int)(MINIGAME_START_TIME - (std::floor(score/DIFFICULTY_INTERVAL))));
     ui->stackedWidget->setCurrentIndex(minigameNum);
+
     qDebug() <<"timer started";
     globalTimer->start(minigameTime*1000);
 
@@ -114,11 +117,18 @@ void Game::winMinigame(){
     timeLeft = 0;
     secondTimer->stop();
     score += POINTS_PER_GAME;
-    ui->Result->setText(resultMessages[(rand() % 5)]);
+    if(score % DIFFICULTY_INTERVAL == 0 && score <= 30)
+    {
+        ui->Result->setText(QString("FASTER!!!"));
+    }
+    else
+    {
+        ui->Result->setText(resultMessages[(rand() % 5)]);
+    }
     minigameNum = (rand()%3) + 2;
     ui->NextGame->setText(QString("NEXT: " + printedState[minigameNum-2]));
 
-    if(score < WIN_SCORE) ui->stackedWidget->setCurrentIndex(HUB);
+    if(score < WIN_SCORE || survival) ui->stackedWidget->setCurrentIndex(HUB);
     else ui->stackedWidget->setCurrentIndex(VICTORY);
 }
 
@@ -206,7 +216,7 @@ void Game::startGame_Avoid()
     ui->AvoidTimer->setText(QString("TIME LEFT: %1").arg(minigameTime));
     timerLabel = ui->AvoidTimer;
     avoidGameDisplay->setFocus();
-    avoidGameDisplay->moveTimer->start(500);
+    avoidGameDisplay->moveTimer->start(5);
 }
 
 void Game::startGame_Arrows()
@@ -301,8 +311,14 @@ void Game::on_StartButton_clicked()
     ui->stackedWidget->setCurrentIndex(HUB);
 }
 
-void Game::on_again_clicked(){ Game::on_StartButton_clicked(); }
-void Game::on_retry_clicked(){ Game::on_StartButton_clicked(); }
+void Game::on_SurvivalButton_clicked()
+{
+    survival = true;
+    Game::on_StartButton_clicked();
+}
+
+void Game::on_again_clicked(){ ui->stackedWidget->setCurrentIndex(START); }
+void Game::on_retry_clicked(){ ui->stackedWidget->setCurrentIndex(START); }
 void Game::on_giveup_clicked(){ Game::on_QuitButton_clicked(); }
 void Game::on_quitter_clicked(){ Game::on_QuitButton_clicked(); }
 
@@ -317,6 +333,8 @@ void Game::arrowLoss(){
     qDebug() << "Missed one...";
     loseMinigame();
 }
+
+
 
 
 

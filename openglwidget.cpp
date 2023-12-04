@@ -9,7 +9,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
     chasing_y = y_pos + ((rand()%2 == 0) ? 0.6:-0.6);
     // Set up the timer
     moveTimer = new QTimer(this);
-    movementSpeed = .1;
+    movementSpeed = .005;
     connect(moveTimer, &QTimer::timeout, this, &OpenGLWidget::moveChasingSquare);
 }
 

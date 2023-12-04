@@ -92,7 +92,7 @@ void ArrowKeys::drawArrow(Qt::Key arrow) {
         orientation = 270.0;
         break;
     case Qt::Key_Up:
-        glColor3f(0.0, 0.0, 1.0);  // Blue for Up
+        glColor3f(0.3, 0.4, 1.0);  // Blue for Up
         orientation = 0.0;
         break;
     case Qt::Key_Down:
@@ -108,8 +108,8 @@ void ArrowKeys::drawArrow(Qt::Key arrow) {
     glRotatef(orientation, 0.0, 0.0, 1.0);
 
     glBegin(GL_TRIANGLES);
-    glVertex2f(-size, -size);
-    glVertex2f(size, -size);
+    glVertex2f(-size/1.4, -size);
+    glVertex2f(size/1.4, -size);
     glVertex2f(0.0, size);
     glEnd();
 }

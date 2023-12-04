@@ -56,10 +56,13 @@ private slots:
 
     void on_quitter_clicked();
 
+    void on_SurvivalButton_clicked();
+
 private:
     QTimer* globalTimer;
     QTimer* secondTimer;
     bool toGame;
+    bool survival = false;
     Ui::Game *ui;
     int score;
     int lives;
