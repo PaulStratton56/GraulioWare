@@ -18,7 +18,7 @@ OpenGLWidget::~OpenGLWidget() {
 
 void OpenGLWidget::initializeGL() {
     initializeOpenGLFunctions();
-    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClearColor(14.0f/255.0f, 0.0f, 26.0f/255.0f, 1.0);
 }
 
 void OpenGLWidget::resizeGL(int w, int h) {
@@ -48,14 +48,14 @@ void OpenGLWidget::paintGL() {
     glEnd();
 
     glColor3f(0.0, 0.0, 0.0);
-    glBegin(GL_LINE_LOOP);
     glLineWidth(2.0);
+    glBegin(GL_LINE_LOOP);
     glVertex2f(-1.0,-1.0);
     glVertex2f(-1.0, 1.0);
     glVertex2f(1.0, 1.0);
     glVertex2f(1.0, -1.0);
-    glLineWidth(1.0);
     glEnd();
+    glLineWidth(1.0);
 }
 
 void OpenGLWidget::keyPressEvent(QKeyEvent *event) {

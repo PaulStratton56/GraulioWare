@@ -11,6 +11,9 @@ Key::Key(QWidget *parent, QLayout* layout, char letter) : QOpenGLWidget(parent)
     myLayout->addWidget(this);
     setFixedSize(KEY_SIZE,KEY_SIZE);
     label = new QLabel(this);
+    QPalette labelPalette = label->palette();
+    labelPalette.setColor(QPalette::WindowText, QColor(Qt::black));
+    label->setPalette(labelPalette);
     label->setText(QString(letter));
     label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     label->setGeometry(0,0, KEY_SIZE, KEY_SIZE);

@@ -15,7 +15,7 @@ ArrowKeys::~ArrowKeys(){
 }
 void ArrowKeys::initializeGL() {
     initializeOpenGLFunctions();
-    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClearColor(57.0/255.0f, 0, 106.0/255.0f, 1.0);
 }
 
 void ArrowKeys::resizeGL(int w, int h) {
