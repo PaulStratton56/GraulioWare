@@ -5,11 +5,11 @@
 
 #include <QString>
 
-#define STARTING_LIVES 1
+#define STARTING_LIVES 5
 #define MINIGAME_START_TIME 10
 #define LETTER_NUMBER 10
 #define KEY_SIZE 80
-#define WIN_SCORE 10
+#define WIN_SCORE 8
 #define DIFFICULTY_INTERVAL 5
 #define POINTS_PER_GAME 1
 

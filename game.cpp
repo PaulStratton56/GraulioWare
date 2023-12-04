@@ -87,7 +87,7 @@ void Game::widgetChanged(int index){
 
 void Game::startMinigame(){
     toGame = false;
-    minigameTime = std::max(4, (int)(MINIGAME_START_TIME - (std::floor(score/DIFFICULTY_INTERVAL))));
+    minigameTime = std::max(4, (int)(MINIGAME_START_TIME - (2*(std::floor(score/DIFFICULTY_INTERVAL)))));
     ui->stackedWidget->setCurrentIndex(minigameNum);
 
     qDebug() <<"timer started";
@@ -117,7 +117,7 @@ void Game::winMinigame(){
     timeLeft = 0;
     secondTimer->stop();
     score += POINTS_PER_GAME;
-    if(score % DIFFICULTY_INTERVAL == 0 && score <= 30)
+    if(score % DIFFICULTY_INTERVAL == 0 && score <= 20)
     {
         ui->Result->setText(QString("FASTER!!!"));
     }
