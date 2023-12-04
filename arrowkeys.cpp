@@ -5,21 +5,17 @@
 #include <QStringList>
 #include <cstdlib>
 
-ArrowKeys::ArrowKeys(QWidget *parent)
-    : QOpenGLWidget(parent), currentArrowIndex(0)
+ArrowKeys::ArrowKeys(QWidget *parent) : QOpenGLWidget(parent)
 {
-    generateArrowSequence();
-
-    arrowTimer = new QTimer(this);
-    connect(arrowTimer, &QTimer::timeout, this, &ArrowKeys::handleArrowTimeout);
-    arrowTimer->start(3000);
+    // arrowTimer = new QTimer(this);
+    // connect(arrowTimer, &QTimer::timeout, this, &ArrowKeys::handleArrowTimeout);
 
 }
 ArrowKeys::~ArrowKeys(){
 }
 void ArrowKeys::initializeGL() {
     initializeOpenGLFunctions();
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
 }
 
 void ArrowKeys::resizeGL(int w, int h) {
@@ -35,52 +31,56 @@ void ArrowKeys::paintGL() {
     }
 }
 
+void ArrowKeys::start(int numArrows)
+{
+    currentArrowIndex = 0;
+    totalArrows = numArrows;
+    arrowSequence.clear();
+    generateArrowSequence();
+    // arrowTimer->start(3000);
+}
 
 
 void ArrowKeys::keyPressEvent(QKeyEvent *event) {
-    totalArrows = 5;
-    if (currentArrowIndex < 5) {
-        Qt::Key expectedKey = arrowSequence[currentArrowIndex];
-
-        // Check if the pressed key matches the current arrow
-        if (event->key() == expectedKey) {
-            // Move to the next arrow
-            currentArrowIndex++;
-
-            // Check if all arrows are pressed
-            if (currentArrowIndex == 4) {
-                // All arrows are pressed, emit the signal
-                emit allArrowsInputted();
-
-                // Generate a new sequence
-                generateArrowSequence();
-            }
+    if(currentArrowIndex == totalArrows){ return; }
+    if (event->key() == arrowSequence[currentArrowIndex]) {
+        currentArrowIndex++;
+        if (currentArrowIndex == totalArrows) {
+            emit allArrowsInputted();
         }
     }
+    else
+    {
+        emit arrowFailure();
+        currentArrowIndex = totalArrows;
+    }
 
-    update(); // Trigger a redraw
+    update();
 }
 
 
 void ArrowKeys::generateArrowSequence() {
-    arrowSequence.clear();
     currentArrowIndex = 0;
 
-    // Generate a random arrow sequence (you can adjust this logic)
-    for (int i = 0; i < 4; ++i) {
-        Qt::Key arrow = static_cast<Qt::Key>(Qt::Key_Left + (rand() % 4));
+    int prevArrow = rand() %4;
+    int arrowNum = prevArrow;
+    for (int i = 0; i < totalArrows; i++) {
+        Qt::Key arrow = static_cast<Qt::Key>(Qt::Key_Left + arrowNum);
         arrowSequence.push_back(arrow);
+        prevArrow = arrowNum;
+        while(arrowNum == prevArrow){ arrowNum = rand() % 4; }
     }
 }
 
-void ArrowKeys::handleArrowTimeout() {
-    // Arrows disappear after a certain time, generate a new sequence
-    generateArrowSequence();
-}
+// void ArrowKeys::handleArrowTimeout() {
+//     // Arrows disappear after a certain time, generate a new sequence
+//     generateArrowSequence();
+// }
 
 void ArrowKeys::drawArrow(Qt::Key arrow) {
-    float size = 0.1;
-    glRotatef(-orientation, 0.0, 0.0, 1.0);
+    float size = 0.3;
+
+    glLoadIdentity();
     // Set color based on arrow direction
     switch (arrow) {
     case Qt::Key_Left:
@@ -106,20 +106,6 @@ void ArrowKeys::drawArrow(Qt::Key arrow) {
     // Center the arrow on the screen
     glTranslatef(0.0, 0.0, 0.0);
     glRotatef(orientation, 0.0, 0.0, 1.0);
-
-    glBegin(GL_TRIANGLES);
-
-    // Adjust the coordinates to create a left-pointing arrow
-//    if (arrow == Qt::Key_Left) {
-//        glVertex2f(-size, 0.0);
-//        glVertex2f(size, -size);
-//        glVertex2f(size, size);
-//    } else {
-//        // Use the original coordinates for other arrow directions
-//        glVertex2f(-size, -size);
-//        glVertex2f(size, -size);
-//        glVertex2f(0.0, size);
-//    }
 
     glBegin(GL_TRIANGLES);
     glVertex2f(-size, -size);

@@ -3,10 +3,8 @@
 #include "gameVars.h"
 #include <QTimer>
 #include <qdebug.h>
-#include <cctype>
 #include <QPoint>
-#include <random>
-#include <Qstring>
+#include <QString>
 #include "openglwidget.h"
 #include <QVBoxLayout>
 #include <QPoint>
@@ -19,27 +17,28 @@ Game::Game(QWidget *parent)
     , ui(new Ui::Game)
 {
     ui->setupUi(this);
-    this->setFixedSize(1280, 720);
+    this->setFixedSize(1167, 647);
 
     globalTimer = new QTimer(this);
     secondTimer = new QTimer(this);
 
     avoidGameDisplay = new OpenGLWidget(this);
     avoidGameDisplay->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    avoidGameDisplay->setFixedSize(600, 400);
+    avoidGameDisplay->setFixedSize(400, 400);
 
     avoidGame = new QVBoxLayout(ui->stackedWidget->widget(AVOIDANCE));
     avoidGame->addWidget(avoidGameDisplay, 0, Qt::AlignCenter);
 
     arrowKeysWidget = new ArrowKeys(this);
     arrowKeysWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    arrowKeysWidget->setFixedSize(600, 400);
+    arrowKeysWidget->setFixedSize(400, 400);
 
     arrowGame = new QVBoxLayout(ui->stackedWidget->widget(ARROWS));
     arrowGame->addWidget(arrowKeysWidget, 0, Qt::AlignCenter);
 
-    connect(arrowKeysWidget, &ArrowKeys::allArrowsInputted, this, &Game::handleArrows);
-    // connect(avoidGameDisplay, &OpenGLWidget::squaresOverlapping, this, &Game::touched);
+    connect(arrowKeysWidget, &ArrowKeys::allArrowsInputted, this, &Game::arrowWin);
+    connect(arrowKeysWidget, &ArrowKeys::arrowFailure, this, &Game::arrowLoss);
+    connect(avoidGameDisplay, &OpenGLWidget::squaresOverlapping, this, &Game::touched);
     connect(globalTimer, &QTimer::timeout, this, &Game::globalTimeout);
     connect(secondTimer, &QTimer::timeout, this, &Game::secondTimeout);
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &Game::widgetChanged);
@@ -61,7 +60,7 @@ void Game::widgetChanged(int index){
     switch(index)
     {
     case(HUB):
-        globalTimer->start(2*1000);
+        globalTimer->start(3*1000);
         ui->Lives->setText(QString("Lives\n%1").arg(lives));
         ui->Score->setText(QString("Score\n%1").arg(score));
         break;
@@ -87,9 +86,7 @@ void Game::widgetChanged(int index){
 
 void Game::startMinigame(){
     toGame = false;
-    // int minigame = (rand()%3) + 2;
-    int minigame = AVOIDANCE;
-    ui->stackedWidget->setCurrentIndex(minigame);
+    ui->stackedWidget->setCurrentIndex(minigameNum);
     qDebug() <<"timer started";
     globalTimer->start(minigameTime*1000);
 
@@ -99,7 +96,13 @@ void Game::startMinigame(){
 
 void Game::loseMinigame(){//temporarily disabled losing
     toGame = true;
+    globalTimer->stop();
+    timeLeft = 0;
+    secondTimer->stop();
     lives -= 1;
+    ui->Result->setText(resultMessages[(rand() % 5) + 5]);
+    minigameNum = (rand()%3) + 2;
+    ui->NextGame->setText(QString("NEXT: " + printedState[minigameNum-2]));
 
     if(lives > 0) ui->stackedWidget->setCurrentIndex(HUB);
     else ui->stackedWidget->setCurrentIndex(LOSS);
@@ -107,7 +110,13 @@ void Game::loseMinigame(){//temporarily disabled losing
 
 void Game::winMinigame(){
     toGame = true;
+    globalTimer->stop();
+    timeLeft = 0;
+    secondTimer->stop();
     score += POINTS_PER_GAME;
+    ui->Result->setText(resultMessages[(rand() % 5)]);
+    minigameNum = (rand()%3) + 2;
+    ui->NextGame->setText(QString("NEXT: " + printedState[minigameNum-2]));
 
     if(score < WIN_SCORE) ui->stackedWidget->setCurrentIndex(HUB);
     else ui->stackedWidget->setCurrentIndex(VICTORY);
@@ -116,32 +125,41 @@ void Game::winMinigame(){
 void Game::globalTimeout(){
     qDebug() << "timer ended";
 
-    if(ui->stackedWidget->currentIndex() == TYPING)
+    if(toGame) startMinigame();
+    else
     {
-        for(int i = keyNumber; i < LETTER_NUMBER; i++)
+        if(ui->stackedWidget->currentIndex() == TYPING)
         {
-            qDebug() << "Deleting key " << i;
-            if(dynamic_cast<CapitalKey*>(keys[i]) != nullptr)
+            for(int i = keyNumber; i < LETTER_NUMBER; i++)
             {
-                CapitalKey* currentKey = dynamic_cast<CapitalKey*>(keys[i]);
-                currentKey->pressed();
+                qDebug() << "Deleting key " << i;
+                if(dynamic_cast<CapitalKey*>(keys[i]) != nullptr)
+                {
+                    CapitalKey* currentKey = dynamic_cast<CapitalKey*>(keys[i]);
+                    currentKey->pressed();
+                }
+                else
+                {
+                    LowerKey* currentKey = dynamic_cast<LowerKey*>(keys[i]);
+                    currentKey->pressed();
+                }
+                qDebug() << "Key " << i << " deleted.";
             }
-            else
-            {
-                LowerKey* currentKey = dynamic_cast<LowerKey*>(keys[i]);
-                currentKey->pressed();
-            }
-            qDebug() << "Key " << i << " deleted.";
+            loseMinigame();
+        }
+        if(ui->stackedWidget->currentIndex() == AVOIDANCE)
+        {
+            avoidGameDisplay->moveTimer->stop();
+            avoidGameDisplay->clearFocus();
+            avoidGameDisplay->reset();
+            winMinigame();
+        }
+        if(ui->stackedWidget->currentIndex() == ARROWS)
+        {
+            arrowKeysWidget->clearFocus();
+            loseMinigame();
         }
     }
-    if(ui->stackedWidget->currentIndex() == AVOIDANCE)
-    {
-        avoidGameDisplay->moveTimer->stop();
-        avoidGameDisplay->clearFocus();
-    }
-
-    if(toGame) startMinigame();
-    else loseMinigame();
 }
 
 void Game::secondTimeout(){
@@ -185,6 +203,7 @@ void Game::startGame_Typing()
 
 void Game::startGame_Avoid()
 {
+    ui->AvoidTimer->setText(QString("TIME LEFT: %1").arg(minigameTime));
     timerLabel = ui->AvoidTimer;
     avoidGameDisplay->setFocus();
     avoidGameDisplay->moveTimer->start(500);
@@ -192,6 +211,9 @@ void Game::startGame_Avoid()
 
 void Game::startGame_Arrows()
 {
+    ui->ArrowTimeLeft->setText(QString("TIME LEFT: %1").arg(minigameTime));
+    timerLabel = ui->ArrowTimeLeft;
+    arrowKeysWidget->start(5);
     arrowKeysWidget->setFocus();
 }
 
@@ -241,7 +263,6 @@ void Game::keyPressEvent(QKeyEvent* event)
         }
         if(keyNumber >= LETTER_NUMBER)
         {
-            globalTimer->stop();
             winMinigame();
         }
         else
@@ -251,14 +272,12 @@ void Game::keyPressEvent(QKeyEvent* event)
     }
 }
 
-void Game::on_lineEdit_textChanged(const QString &arg1)
-{
-
-}
-
 void Game::touched()
 {
     qDebug() << "Touching..";
+    avoidGameDisplay->reset();
+    avoidGameDisplay->moveTimer->stop();
+    loseMinigame();
 }
 
 // ========== BUTTON FUNCTIONS ==========
@@ -271,6 +290,9 @@ void Game::on_QuitButton_clicked()
 void Game::on_StartButton_clicked()
 {
     qDebug() << "Beginning Game!";
+    ui->Result->setText("Minigame incoming!!!");
+    minigameNum = (rand()%3) + 2;
+    ui->NextGame->setText(QString("NEXT: " + printedState[minigameNum-2]));
     lives = STARTING_LIVES;
     score = 0;
     toGame = true;
@@ -282,46 +304,20 @@ void Game::on_StartButton_clicked()
 void Game::on_again_clicked(){ Game::on_StartButton_clicked(); }
 void Game::on_retry_clicked(){ Game::on_StartButton_clicked(); }
 void Game::on_giveup_clicked(){ Game::on_QuitButton_clicked(); }
+void Game::on_quitter_clicked(){ Game::on_QuitButton_clicked(); }
 
 // ========== OTHER FUNCTIONS ==========
 
-// void Game::on_lineEdit_textChanged(const QString &arg1)
-// {
-//     qDebug() <<arg1 << " "<< word;
-//     QString temp1 = arg1;
-//     QString temp2 = word;
-//     qDebug() <<temp1  << temp2;
-//     if(temp1 == temp2){
-//         qDebug() << "are same";
-//         timer->stop();
-//         score += 100;
-//         scora->setText("Score: " + QString::number(score));
-//         ui->stackedWidget->setCurrentIndex(1);
-//     }
-// }
-
-//void handleSquaresOverlapping(){
-
-//}
-
-// QString Game::generateRandomLetters(int length) {
-//     QString randomString;
-//     QRandomGenerator randomGenerator;
-
-//     for (int i = 0; i < length; ++i) {
-//         // Generate a random uppercase letter (A-Z) using ASCII values
-//         QChar randomLetter = QChar('A' + (rand()%58));
-//         randomString.append(randomLetter);
-//     }
-
-//     return randomString;
-// }
-void Game::handleArrows(){
-    globalTimer->stop();
-    score+=100;
-    ui->Score->setText(QString("Score: %1").arg(score));
-    ui->stackedWidget->setCurrentIndex(HUB);
-
+void Game::arrowWin(){
+    qDebug() << "All arrows hit!";
+    winMinigame();
 }
+
+void Game::arrowLoss(){
+    qDebug() << "Missed one...";
+    loseMinigame();
+}
+
+
 
 

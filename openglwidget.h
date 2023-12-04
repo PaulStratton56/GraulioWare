@@ -13,6 +13,7 @@ public:
     QTimer* moveTimer;
     OpenGLWidget(QWidget *parent = nullptr);
     ~OpenGLWidget();
+    void reset();
 
 protected:
     void initializeGL() override;

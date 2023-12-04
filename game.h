@@ -40,6 +40,7 @@ private slots:
     void widgetChanged(int index);
     void startMinigame();
     void loseMinigame();
+    void winMinigame();
     void globalTimeout();
     void secondTimeout();
 
@@ -50,8 +51,10 @@ private slots:
     QString getLetters(int length);
     void keyPressEvent(QKeyEvent* event);
     void touched();
-    void handleArrows();
-    void on_lineEdit_textChanged(const QString &arg1);
+    void arrowWin();
+    void arrowLoss();
+
+    void on_quitter_clicked();
 
 private:
     QTimer* globalTimer;
@@ -61,6 +64,7 @@ private:
     int score;
     int lives;
     int minigameTime;
+    int minigameNum;
     int timeLeft;
     QLabel* timerLabel;
     OpenGLWidget *avoidGameDisplay;
@@ -69,7 +73,27 @@ private:
     int keyNumber;
     ArrowKeys *arrowKeysWidget;
     QVBoxLayout* arrowGame;
+    QString printedState[3] =
+    {
+        "HYPER TYPER",
+        "SIMON SAYS",
+        "CHASER CUBE"
+    };
 
+    QString resultMessages[10] =
+    {
+        "Hey, nice work!",
+        "Woah, you got it!",
+        "Mission Complete!",
+        "Fantastic job!",
+        "Nice! Another!",
+
+        "Ouch.. that was rough.",
+        "You did it! NOT!",
+        "Please try again.",
+        "So close.. Again!",
+        "Not quite.. sorry.",
+    };
 };
 
 #endif // GAME_H

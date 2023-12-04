@@ -5,9 +5,8 @@
 OpenGLWidget::OpenGLWidget(QWidget *parent)
     : QOpenGLWidget(parent), x_pos(0.0f), y_pos(0.0f) {
     // Initialize chasing_x and chasing_y at a fixed distance away
-    float distance = 1.0f;
-    chasing_x = x_pos + distance;
-    chasing_y = y_pos + distance;
+    chasing_x = x_pos + ((rand()%2 == 0) ? 0.6:-0.6);
+    chasing_y = y_pos + ((rand()%2 == 0) ? 0.6:-0.6);
     // Set up the timer
     moveTimer = new QTimer(this);
     movementSpeed = .1;
@@ -19,7 +18,7 @@ OpenGLWidget::~OpenGLWidget() {
 
 void OpenGLWidget::initializeGL() {
     initializeOpenGLFunctions();
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
 }
 
 void OpenGLWidget::resizeGL(int w, int h) {
@@ -47,22 +46,31 @@ void OpenGLWidget::paintGL() {
     glVertex2f(chasing_x + 0.1, chasing_y + 0.1);
     glVertex2f(chasing_x, chasing_y + 0.1);
     glEnd();
+
+    glColor3f(0.0, 0.0, 0.0);
+    glBegin(GL_LINE_LOOP);
+    glLineWidth(2.0);
+    glVertex2f(-1.0,-1.0);
+    glVertex2f(-1.0, 1.0);
+    glVertex2f(1.0, 1.0);
+    glVertex2f(1.0, -1.0);
+    glLineWidth(1.0);
+    glEnd();
 }
 
 void OpenGLWidget::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Left:
-        qDebug() << "left pressed";
-        x_pos -= 0.1;
+        if(x_pos > -1) x_pos -= 0.1;
         break;
     case Qt::Key_Right:
-        x_pos += 0.1;
+        if(x_pos < 0.9) x_pos += 0.1;
         break;
     case Qt::Key_Up:
-        y_pos += 0.1;
+        if(y_pos < 0.9) y_pos += 0.1;
         break;
     case Qt::Key_Down:
-        y_pos -= 0.1;
+        if(y_pos > -1) y_pos -= 0.1;
         break;
     default:
         break;
@@ -70,6 +78,7 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event) {
 
     update();
 }
+
 void OpenGLWidget::moveChasingSquare() {
     // Calculate the direction towards the first square
     float dx = x_pos - chasing_x;
@@ -108,4 +117,13 @@ bool OpenGLWidget::areSquaresOverlapping() const {
     }
 
     return true;  // Squares overlap
+}
+
+void OpenGLWidget::reset()
+{
+    x_pos = 0.0;
+    y_pos = 0.0;
+    chasing_x = x_pos + ((rand()%2 == 0) ? 0.6:-0.6);
+    chasing_y = y_pos + ((rand()%2 == 0) ? 0.6:-0.6);
+    update();
 }
