@@ -52,6 +52,8 @@ Game::~Game()
     delete ui;
     delete avoidGameDisplay;
     delete avoidGame;
+    delete arrowKeysWidget;
+    delete arrowGame;
 }
 
 // ========== GAME FLOW FUNCTIONS ==========

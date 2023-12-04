@@ -14,6 +14,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 }
 
 OpenGLWidget::~OpenGLWidget() {
+    delete moveTimer;
 }
 
 void OpenGLWidget::initializeGL() {

@@ -44,7 +44,7 @@ void Key::resizeGL(int w, int h)
 // CapitalKey function implementation
 void CapitalKey::pressed()
 {
-    qDebug() << "Key pressed event";
+    qDebug() << "Capital Key pressed event";
     myLayout->removeWidget(this);
     qDebug() << "self removed from widget. Deleting self!";
     delete this;
@@ -90,7 +90,7 @@ void CapitalKey::paintGL()
 // LowerKey function implementation
 void LowerKey::pressed()
 {
-    qDebug() << "Key pressed event";
+    qDebug() << "Lowercase Key pressed event";
     myLayout->removeWidget(this);
     qDebug() << "self removed from widget. Deleting self!";
     delete this;
